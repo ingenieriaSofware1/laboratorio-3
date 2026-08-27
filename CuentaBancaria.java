@@ -2,9 +2,10 @@ package modelo;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
+import servicio.RegistroAuditoriaBancaria;  // ← Importar la nueva clase
 
 public abstract class CuentaBancaria {
-    // Atributos privados (encapsulamiento)
+    // Atributos
     private String id;
     private String titular;
     private double saldo;
@@ -12,7 +13,9 @@ public abstract class CuentaBancaria {
     private LocalDateTime fechaCreacion;
     private boolean activa;
     
-    // Constructor
+    // Referencia al registro de auditoría (inyectado desde fuera)
+    private RegistroAuditoriaBancaria auditoria;
+    
     public CuentaBancaria(String titular, double saldoInicial, TipoCuenta tipoCuenta) {
         validarTitular(titular);
         validarSaldoInicial(saldoInicial);
@@ -23,9 +26,32 @@ public abstract class CuentaBancaria {
         this.tipoCuenta = tipoCuenta;
         this.fechaCreacion = LocalDateTime.now();
         this.activa = true;
+        this.auditoria = null; // Se inyectará después
     }
     
-    // Métodos abstractos (las subclases deben implementar)
+    // Método para inyectar el registro de auditoría
+    public void setAuditoria(RegistroAuditoriaBancaria auditoria) {
+        this.auditoria = auditoria;
+    }
+    
+    // Método protegido para registrar auditoría
+    protected void registrarAuditoria(String tipo, double monto, String mensaje) {
+        if (auditoria != null) {
+            try {
+                auditoria.registrar(id, titular, tipo, monto, mensaje);
+            } catch (Exception e) {
+                System.err.println("Error al registrar auditoría: " + e.getMessage());
+                // No lanzamos excepción para no interrumpir la operación bancaria
+            }
+        } else {
+            // Fallback: imprimir en consola si no hay auditoría
+            System.out.printf("[AUDITORIA] Cuenta: %s, Titular: %s, Tipo: %s, Monto: %.2f, Mensaje: %s%n",
+                id.substring(0, 8), titular, tipo, monto, mensaje);
+        }
+    }
+    
+    // ... (resto de métodos igual que antes)
+     // Métodos abstractos (las subclases deben implementar)
     public abstract void aplicarComisionMensual();
     protected abstract void validarRetiro(double monto) throws IllegalArgumentException;
     protected abstract void actualizarLimites(double monto);
@@ -105,4 +131,5 @@ public abstract class CuentaBancaria {
         return String.format("CuentaBancaria{id='%s', titular='%s', saldo=%.2f, tipo=%s, activa=%s}",
             id.substring(0, 8), titular, saldo, tipoCuenta, activa);
     }
+
 }
