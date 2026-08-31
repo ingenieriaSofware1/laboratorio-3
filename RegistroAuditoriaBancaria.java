@@ -178,7 +178,7 @@ public class RegistroAuditoriaBancaria implements AutoCloseable {
      * Escribe una cabecera de sesión en el log
      */
     private void escribirCabecera() throws IOException {
-        // ✅ USO DEL MÉTODO MANUAL padRight
+       
         String cabecera = String.format("%s | %s | %s | %s | %s | %s",
             padRight("TIMESTAMP", 23),
             padRight("CUENTA", 8),
