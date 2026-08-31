@@ -6,7 +6,7 @@ public class Main {
     public static void main(String[] args) {
         System.out.println("=== SISTEMA BANCARIO MODERNO ===\n");
         
-        // ✅ USO DE TRY-WITH-RESOURCES
+       
         // El recurso se cierra AUTOMÁTICAMENTE al salir del bloque
         try (RegistroAuditoriaBancaria auditoria = new RegistroAuditoriaBancaria()) {
             
@@ -61,7 +61,6 @@ public class Main {
             e.printStackTrace();
         }
         
-        // ⚠️ EL RECURSO YA ESTÁ CERRADO AUTOMÁTICAMENTE AQUÍ
         System.out.println("\n=== PROGRAMA FINALIZADO ===");
         System.out.println("El archivo de auditoría se cerró correctamente.");
     }
